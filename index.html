@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مطعمك</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f5faff;
+    direction: rtl;
+}
+
+.header {
+    background: #4da6ff;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+button {
+    background: #4da6ff;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>🍽️ مطعمك</h2>
+</div>
+
+<div class="container">
+
+<!-- بيانات العميل -->
+<div class="card">
+    <input id="phone" placeholder="رقم العميل"><br><br>
+    <input id="phone2" placeholder="رقم اضافي (اختياري)"><br><br>
+    <input id="address" placeholder="العنوان بالتفصيل"><br><br>
+
+    <select id="area">
+        <option>اختار المنطقة</option>
+        <option value="10">فيصل</option>
+        <option value="20">الهرم</option>
+    </select><br><br>
+
+    <select id="branch">
+        <option>اختار الفرع</option>
+        <option>البحوث</option>
+        <option>اول فيصل</option>
+        <option>اخر فيصل</option>
+    </select>
+</div>
+
+<!-- منيو -->
+<div class="card">
+    <h3>سمك بلطي - 100 جنيه</h3>
+    <input type="number" id="qty" value="1">
+
+    <select id="cook">
+        <option>مشوي</option>
+        <option>مقلي</option>
+        <option>زيت وليمون</option>
+        <option>مقلي جزل</option>
+        <option>سنجاري</option>
+    </select>
+
+    <input id="note" placeholder="كومنت">
+</div>
+
+<!-- الطلب -->
+<div class="card">
+    <button onclick="sendOrder()">تأكيد الطلب</button>
+    <h3 id="total"></h3>
+</div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
+<script>
+
+// 🔥 حط بيانات Firebase هنا
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_APP.firebaseapp.com",
+  databaseURL: "https://YOUR_APP.firebaseio.com",
+  projectId: "YOUR_APP",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// حساب السعر
+function calcTotal() {
+    let qty = document.getElementById("qty").value;
+    let area = document.getElementById("area").value;
+
+    let total = (qty * 100) + Number(area || 0);
+
+    document.getElementById("total").innerText =
+        "الإجمالي: " + total + " جنيه";
+}
+
+// ارسال الطلب
+function sendOrder() {
+
+    let order = {
+        phone: phone.value,
+        phone2: phone2.value,
+        address: address.value,
+        area: area.options[area.selectedIndex].text,
+        branch: branch.value,
+        qty: qty.value,
+        cook: cook.value,
+        note: note.value,
+        status: "جديد"
+    };
+
+    db.ref("orders").push(order);
+
+    alert("تم إرسال الطلب ✅");
+}
+
+setInterval(calcTotal, 1000);
+
+</script>
+
+</body>
+</html>
